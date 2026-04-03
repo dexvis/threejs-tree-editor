@@ -1,19 +1,27 @@
 {
   "name": "firebird",
   "version": "1.0.0",
-  "description": "Three.js utilities library",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "test": "tsx node_modules/jasmine/bin/jasmine --config=spec/support/jasmine.json",
-    "prepublishOnly": "npm run build"
+  "description": "Three.js utilities library for CERN ROOT geometry navigation",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
   },
-  "keywords": [
-    "threejs",
-    "3d",
-    "editor"
-  ],
+  "files": ["dist"],
+  "scripts": {
+    "build": "vite build",
+    "build:check": "tsc --noEmit",
+    "test": "tsx node_modules/jasmine/bin/jasmine --config=spec/support/jasmine.json",
+    "prepublishOnly": "npm run build",
+    "clean": "rm -rf dist"
+  },
+  "keywords": ["threejs", "3d", "editor", "root", "cern"],
   "author": "",
   "license": "MIT",
   "devDependencies": {
@@ -22,13 +30,9 @@
     "@types/three": "^0.183.1",
     "jasmine": "^5.6.0",
     "tsx": "^4.19.2",
-    "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@types/picomatch": "^4.0.2",
-    "outmatch": "^1.0.0",
-    "picomatch": "^4.0.3",
-    "three": ">=0.128.0"
+    "typescript": "^5.8.3",
+    "vite": "^5.0.0",
+    "vite-plugin-dts": "^3.0.0"
   },
   "peerDependencies": {
     "three": ">=0.128.0"

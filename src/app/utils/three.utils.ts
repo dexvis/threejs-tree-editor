@@ -1,6 +1,7 @@
 import outmatch from 'outmatch';
 import { GeoNodeWalkCallback, walkGeoNodes } from "../../lib-root-geometry/root-geo-navigation" 
 import { MergeResult } from "./three-geometry-merge";
+import * as THREE from "three";
 
 /**
  * Callback function type for walking through Object3D nodes.
