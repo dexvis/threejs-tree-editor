@@ -13,12 +13,12 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),  // ← точка входа index.ts
-      name: 'Firebird',
+      name: 'DexvisThreejsTreeEditor',
       formats: ['es', 'cjs'],
       fileName: (format) => format === 'es' ? 'index.js' : 'index.cjs'
     },
     rollupOptions: {
-      external: ['three'],  // three не включаем в сборку
+      external: ['three', /^three\//, '@dexvis/root-geo-tree-editor'],
       output: {
         globals: {
           three: 'THREE'
