@@ -48,7 +48,15 @@ export function ruleSetsFromObj(obj: any): DetectorThreeRuleSet[] {
         try {
           // Convert raw JSON to real material
           const loadedMaterial = materialLoader.parse(r.materialJson);
-          rule.material = loadedMaterial;
+          // three r185+: an unknown material type no longer throws —
+          // MaterialLoader logs an error and returns a base Material
+          // placeholder whose `type` differs from the requested one.
+          // Treat that as a parse failure: the rule keeps no material.
+          if (r.materialJson.type && loadedMaterial.type !== r.materialJson.type) {
+            console.error('Failed to parse materialJson: unknown material type', r.materialJson);
+          } else {
+            rule.material = loadedMaterial;
+          }
         } catch (err) {
           console.error('Failed to parse materialJson:', err, r.materialJson);
         }
