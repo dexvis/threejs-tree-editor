@@ -3,7 +3,6 @@ import {createOutline, disposeOriginalMeshesAfterMerge, findObject3DNodes, prune
 import {mergeBranchGeometries, mergeMeshList, MergeResult} from "./three-geometry-merge";
 import * as THREE from "three";
 import {ColorRepresentation} from "three";
-import {SimplifyModifier} from "three/examples/jsm/modifiers/SimplifyModifier.js";
 
 /**
  * Flag name used to mark objects that have already been processed by geometry editing rules.
@@ -88,25 +87,33 @@ export interface EditThreeNodeRule {
 
 }
 
-function simplifyMeshTree(object: THREE.Object3D, simplifyRatio = 0.5): void {
+async function simplifyMeshTree(object: THREE.Object3D, simplifyRatio = 0.5): Promise<void> {
+  // Load the modifier on demand: since three r186 it wraps meshoptimizer and
+  // inlines its WASM binary, which a static import would put into every bundle
+  // that imports this package, whether or not a rule simplifies meshes.
+  const {SimplifyModifier} = await import("three/examples/jsm/modifiers/SimplifyModifier.js");
   const simplifier = new SimplifyModifier();
   const minVerts = 10;
 
+  // SimplifyModifier.modify() is async, and traverse() callbacks cannot await:
+  // collect the meshes first, then simplify them one by one.
+  const meshes: THREE.Mesh[] = [];
   object.traverse((child: THREE.Object3D) => {
-
-    // Type coercions and type validations
-    if (!(child as THREE.Mesh).isMesh) {
-      return
+    if ((child as THREE.Mesh).isMesh) {
+      meshes.push(child as THREE.Mesh);
     }
-    const mesh = child as THREE.Mesh;
+  });
 
+  for (const mesh of meshes) {
+
+    // Type validations
     if(!(mesh.geometry as THREE.BufferGeometry).isBufferGeometry) {
-      return;
+      continue;
     }
     const geom = mesh.geometry as THREE.BufferGeometry;
 
     if (!geom.attributes['position']) {
-      return;
+      continue;
     }
 
     // Do we need to convert looking at the number of vertices?
@@ -115,12 +122,12 @@ function simplifyMeshTree(object: THREE.Object3D, simplifyRatio = 0.5): void {
 
     if (verticeCount < minVerts) {
       console.log(`[SimplifyMeshTree] Mesh "${mesh.name || '(unnamed)'}": skipped (too small, vertices=${verticeCount })`);
-      return;
+      continue;
     }
 
     if (verticeCount < targetVerticeCount) {
       console.log(`[SimplifyMeshTree] Mesh "${mesh.name || '(unnamed)'}": skipped (too small targetVerticeCount, targetVerticeCount=${targetVerticeCount})`);
-      return;
+      continue;
     }
 
 
@@ -128,7 +135,7 @@ function simplifyMeshTree(object: THREE.Object3D, simplifyRatio = 0.5): void {
     const timeStart = performance.now();
     console.log(`[SimplifyMeshTree] Processing "${mesh.name || '(unnamed)'}": vertices before=${verticeCount}, after=${targetVerticeCount}`);
 
-    mesh.geometry = simplifier.modify(geom, targetVerticeCount);
+    mesh.geometry = await simplifier.modify(geom, targetVerticeCount);
 
     // Recompute bounding limits
     mesh.geometry.computeBoundingBox();
@@ -145,7 +152,7 @@ function simplifyMeshTree(object: THREE.Object3D, simplifyRatio = 0.5): void {
     if (timeEnd - timeStart > 500) {
       console.warn(`[SimplifyMeshTree] Warn: mesh "${mesh.name || '(unnamed)'}" took ${Math.round(timeEnd-timeStart)}ms to simplify.`);
     }
-  });
+  }
 }
 
 function mergeWhatever(node: Object3D, rule: EditThreeNodeRule): MergeResult | undefined {
@@ -193,7 +200,7 @@ function mergeWhatever(node: Object3D, rule: EditThreeNodeRule): MergeResult | u
 
 
 
-export function editThreeNodeContent(node: Object3D, rule: EditThreeNodeRule) {
+export async function editThreeNodeContent(node: Object3D, rule: EditThreeNodeRule): Promise<void> {
   let {
     patterns,
     deleteOrigins = true,
@@ -309,7 +316,7 @@ export function editThreeNodeContent(node: Object3D, rule: EditThreeNodeRule) {
     }
 
     if (simplifyMeshes) {
-      simplifyMeshTree(targetMesh, simplifyRatio);
+      await simplifyMeshTree(targetMesh, simplifyRatio);
     }
 
     if (outline) {

@@ -156,7 +156,7 @@ describe('three-geometry-editor', () => {
 
   describe('editThreeNodeContent with merge=false', () => {
 
-    it('should process only meshes matching pattern when pattern is provided', () => {
+    it('should process only meshes matching pattern when pattern is provided', async () => {
       const root = createBeamPipeStructure();
 
       const rule: EditThreeNodeRule = {
@@ -166,7 +166,7 @@ describe('three-geometry-editor', () => {
         outline: false
       };
 
-      editThreeNodeContent(root, rule);
+      await editThreeNodeContent(root, rule);
 
       // Check that v_upstream meshes have the new color
       root.traverse((child) => {
@@ -176,7 +176,7 @@ describe('three-geometry-editor', () => {
       });
     });
 
-    it('should set geometryEditingSkipRules flag on processed meshes', () => {
+    it('should set geometryEditingSkipRules flag on processed meshes', async () => {
       const root = createBeamPipeStructure();
       clearGeometryEditingFlags(root);
 
@@ -187,7 +187,7 @@ describe('three-geometry-editor', () => {
         outline: false
       };
 
-      editThreeNodeContent(root, rule);
+      await editThreeNodeContent(root, rule);
 
       // v_upstream meshes should have the flag set
       root.traverse((child) => {
@@ -204,7 +204,7 @@ describe('three-geometry-editor', () => {
       });
     });
 
-    it('should skip meshes with geometryEditingSkipRules=true when processing without pattern', () => {
+    it('should skip meshes with geometryEditingSkipRules=true when processing without pattern', async () => {
       const root = createBeamPipeStructure();
       clearGeometryEditingFlags(root);
 
@@ -215,7 +215,7 @@ describe('three-geometry-editor', () => {
         merge: false,
         outline: false
       };
-      editThreeNodeContent(root, rule1);
+      await editThreeNodeContent(root, rule1);
 
       // Second rule: "the rest" (no pattern)
       const rule2: EditThreeNodeRule = {
@@ -223,7 +223,7 @@ describe('three-geometry-editor', () => {
         merge: false,
         outline: false
       };
-      editThreeNodeContent(root, rule2);
+      await editThreeNodeContent(root, rule2);
 
       // v_upstream meshes should still be red (not overwritten by rule2)
       root.traverse((child) => {
@@ -240,7 +240,7 @@ describe('three-geometry-editor', () => {
       });
     });
 
-    it('should not create outline of outline', () => {
+    it('should not create outline of outline', async () => {
       const root = createBeamPipeStructure();
       clearGeometryEditingFlags(root);
 
@@ -253,7 +253,7 @@ describe('three-geometry-editor', () => {
         merge: false,
         outline: true
       };
-      editThreeNodeContent(root, rule1);
+      await editThreeNodeContent(root, rule1);
 
       // Should have created 2 outlines (for 2 v_upstream meshes)
       const afterRule1Count = countObjectsWithGeometry(root);
@@ -265,7 +265,7 @@ describe('three-geometry-editor', () => {
         merge: false,
         outline: true
       };
-      editThreeNodeContent(root, rule2);
+      await editThreeNodeContent(root, rule2);
 
       // Should have created outlines only for the 3 remaining original meshes
       // NOT for the outline objects created by rule1
@@ -281,7 +281,7 @@ describe('three-geometry-editor', () => {
 
   describe('editThreeNodeContent with hierarchical structure', () => {
 
-    it('should apply style to descendants when applyToDescendants is true (default)', () => {
+    it('should apply style to descendants when applyToDescendants is true (default)', async () => {
       const root = createHierarchicalBeamPipe();
       clearGeometryEditingFlags(root);
 
@@ -294,7 +294,7 @@ describe('three-geometry-editor', () => {
         // applyToDescendants defaults to true
       };
 
-      editThreeNodeContent(root, rule);
+      await editThreeNodeContent(root, rule);
 
       // Children of v_upstream_coating should be red
       root.traverse((child) => {
@@ -304,7 +304,7 @@ describe('three-geometry-editor', () => {
       });
     });
 
-    it('should skip descendants in "the rest" rule when parent was processed', () => {
+    it('should skip descendants in "the rest" rule when parent was processed', async () => {
       const root = createHierarchicalBeamPipe();
       clearGeometryEditingFlags(root);
 
@@ -315,7 +315,7 @@ describe('three-geometry-editor', () => {
         merge: false,
         outline: false
       };
-      editThreeNodeContent(root, rule1);
+      await editThreeNodeContent(root, rule1);
 
       // Second rule: "the rest" (no pattern)
       const rule2: EditThreeNodeRule = {
@@ -323,7 +323,7 @@ describe('three-geometry-editor', () => {
         merge: false,
         outline: false
       };
-      editThreeNodeContent(root, rule2);
+      await editThreeNodeContent(root, rule2);
 
       // v_upstream_coating children (Left, Right) should still be red
       // They should not be overwritten by rule2 due to hierarchical skip
@@ -341,7 +341,7 @@ describe('three-geometry-editor', () => {
       });
     });
 
-    it('should handle parent and child with same name pattern without duplicates', () => {
+    it('should handle parent and child with same name pattern without duplicates', async () => {
       const root = createSameNameHierarchy();
       clearGeometryEditingFlags(root);
 
@@ -356,7 +356,7 @@ describe('three-geometry-editor', () => {
         outline: true
       };
 
-      editThreeNodeContent(root, rule);
+      await editThreeNodeContent(root, rule);
 
       // Should create only ONE outline (for the one mesh)
       const afterCount = countObjectsWithGeometry(root);
@@ -373,7 +373,7 @@ describe('three-geometry-editor', () => {
       expect(styledMeshCount).toBe(1); // Only one mesh with that name
     });
 
-    it('should skip child in "the rest" when parent was matched even with same name', () => {
+    it('should skip child in "the rest" when parent was matched even with same name', async () => {
       const root = createSameNameHierarchy();
       clearGeometryEditingFlags(root);
 
@@ -384,7 +384,7 @@ describe('three-geometry-editor', () => {
         merge: false,
         outline: false
       };
-      editThreeNodeContent(root, rule1);
+      await editThreeNodeContent(root, rule1);
 
       // Second rule: "the rest"
       const rule2: EditThreeNodeRule = {
@@ -392,7 +392,7 @@ describe('three-geometry-editor', () => {
         merge: false,
         outline: false
       };
-      editThreeNodeContent(root, rule2);
+      await editThreeNodeContent(root, rule2);
 
       // v_upstream_coating mesh should still be red
       root.traverse((child) => {
@@ -409,7 +409,7 @@ describe('three-geometry-editor', () => {
       });
     });
 
-    it('should not apply to descendants when applyToDescendants is false', () => {
+    it('should not apply to descendants when applyToDescendants is false', async () => {
       const root = createHierarchicalBeamPipe();
       clearGeometryEditingFlags(root);
 
@@ -422,7 +422,7 @@ describe('three-geometry-editor', () => {
         applyToDescendants: false
       };
 
-      editThreeNodeContent(root, rule);
+      await editThreeNodeContent(root, rule);
 
       // When applyToDescendants is false and the matched node is a Group (not Mesh),
       // no styling is applied because Groups don't have geometry.
@@ -443,9 +443,35 @@ describe('three-geometry-editor', () => {
     });
   });
 
+  describe('editThreeNodeContent with simplifyMeshes', () => {
+
+    it('replaces the geometry with a simplified one before the promise resolves', async () => {
+      const sphere = new Mesh(new THREE.SphereGeometry(1, 32, 16), new MeshBasicMaterial());
+      sphere.name = 'sphere';
+      const root = new Group();
+      root.add(sphere);
+      const verticesBefore = sphere.geometry.attributes['position'].count;
+
+      const rule: EditThreeNodeRule = {
+        patterns: ['**/sphere'],
+        merge: false,
+        outline: false,
+        simplifyMeshes: true,
+        simplifyRatio: 0.5
+      };
+
+      await editThreeNodeContent(root, rule);
+
+      const verticesAfter = sphere.geometry.attributes['position'].count;
+      expect(verticesAfter).toBeGreaterThan(0);
+      expect(verticesAfter).toBeLessThan(verticesBefore);
+      expect(sphere.geometry.boundingSphere).not.toBeNull();
+    });
+  });
+
   describe('editThreeNodeContent with merge=true', () => {
 
-    it('should set geometryEditingSkipRules on merged mesh', () => {
+    it('should set geometryEditingSkipRules on merged mesh', async () => {
       const root = createBeamPipeStructure();
       clearGeometryEditingFlags(root);
 
@@ -456,7 +482,7 @@ describe('three-geometry-editor', () => {
         newName: 'merged_upstream'
       };
 
-      editThreeNodeContent(root, rule);
+      await editThreeNodeContent(root, rule);
 
       // Find the merged mesh
       let mergedMesh: Mesh | null = null;
@@ -470,7 +496,7 @@ describe('three-geometry-editor', () => {
       expect(mergedMesh!.userData['geometryEditingSkipRules']).toBe(true);
     });
 
-    it('should not re-process merged meshes in subsequent rules without pattern', () => {
+    it('should not re-process merged meshes in subsequent rules without pattern', async () => {
       const root = createBeamPipeStructure();
       clearGeometryEditingFlags(root);
 
@@ -482,7 +508,7 @@ describe('three-geometry-editor', () => {
         newName: 'merged_upstream',
         color: 0xff0000
       };
-      editThreeNodeContent(root, rule1);
+      await editThreeNodeContent(root, rule1);
 
       // Second rule: "the rest"
       const rule2: EditThreeNodeRule = {
@@ -490,7 +516,7 @@ describe('three-geometry-editor', () => {
         merge: false,
         outline: false
       };
-      editThreeNodeContent(root, rule2);
+      await editThreeNodeContent(root, rule2);
 
       // Merged mesh should still be red
       root.traverse((child) => {

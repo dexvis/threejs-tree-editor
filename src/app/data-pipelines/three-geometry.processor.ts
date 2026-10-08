@@ -121,7 +121,7 @@ export class ThreeGeometryProcessor {
 
   }
 
-  public processRuleSets(ruleSets: DetectorThreeRuleSet[], detectors: Subdetector[]) {
+  public async processRuleSets(ruleSets: DetectorThreeRuleSet[], detectors: Subdetector[]): Promise<void> {
     console.log(`[processRuleSets] Applying ${ruleSets.length} theme rules...`)
     const totalTimePerfMessage = "[processRuleSets] Time applying rules";
     console.time(totalTimePerfMessage);
@@ -136,7 +136,7 @@ export class ThreeGeometryProcessor {
 
       // Actually apply rules
       for(let rule of ruleSet) {
-        editThreeNodeContent(detector.geometry, rule);
+        await editThreeNodeContent(detector.geometry, rule);
       }
 
       // Check the rule didn't take too long
