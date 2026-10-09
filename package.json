@@ -45,7 +45,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@dexvis/root-geo-tree-editor": "^0.1.1",
+    "@dexvis/root-geo-tree-editor": "^0.2.0",
     "outmatch": "^1.0.0"
   }
 }
