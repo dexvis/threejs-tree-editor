@@ -5,7 +5,7 @@ import {Subdetector} from "../model/subdetector";
 
 /**
  * A typed object that associates a name (or multiple names) with an array of edit rules.
- * E.g. { name: "DIRC_14", rules: [ { patterns: [...], ... } ] }
+ * E.g. { name: "Tracker_14", rules: [ { patterns: [...], ... } ] }
  */
 export interface DetectorThreeRuleSet {
   names?: string[];

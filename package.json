@@ -21,6 +21,10 @@
     "prepublishOnly": "npm run build",
     "build:check": "tsc --noEmit"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dexvis/threejs-tree-editor.git"
+  },
   "keywords": [
     "threejs",
     "3d",
@@ -28,8 +32,12 @@
     "root",
     "cern"
   ],
-  "author": "",
+  "author": "dexvis",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dexvis/threejs-tree-editor/issues"
+  },
+  "homepage": "https://github.com/dexvis/threejs-tree-editor#readme",
   "devDependencies": {
     "@types/node": "^26.6.4",
     "@types/three": "^0.186.0",
