@@ -24,7 +24,7 @@ export type NodeWalkCallback = (node: any, nodeFullPath: string, level: number) 
  * @property {string} [parentPath=""] - The hierarchical path of the parent node.
  * @property {any} [pattern=null] - A pattern to match node paths against.
  */
-interface NodeWalkOptions {
+export interface NodeWalkOptions {
   maxLevel?: number;
   level?: number;
   parentPath?: string;

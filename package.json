@@ -3,25 +3,23 @@
   "version": "0.1.0",
   "description": "Three.js scene-tree editing, merging and outlining utilities for detector geometry (rulesets, skip-flags, geometry processor)",
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
+  "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "vite build",
-    "build:check": "tsc --noEmit",
+    "build": "tsdown",
+    "dev": "tsdown --watch",
     "test": "vitest run",
     "prepublishOnly": "npm run build",
-    "clean": "rm -rf dist"
+    "build:check": "tsc --noEmit"
   },
   "keywords": [
     "threejs",
@@ -35,11 +33,10 @@
   "devDependencies": {
     "@types/node": "^26.6.4",
     "@types/three": "^0.186.0",
+    "three": "^0.186.1",
+    "tsdown": "^0.23.0",
     "typescript": "^6.0.3",
-    "vite": "^8.3.2",
-    "vite-plugin-dts": "^5.1.2",
-    "vitest": "^5.0.3",
-    "three": "^0.186.1"
+    "vitest": "^5.0.3"
   },
   "peerDependencies": {
     "three": ">=0.128.0"
